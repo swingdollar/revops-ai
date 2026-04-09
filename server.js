@@ -9,7 +9,7 @@ app.use(express.json());
 
 const CONFIG = {
   SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
-  PAYMENT_WALLET: process.env.SOLANA_WALLET || '',
+  PAYMENT_WALLET: process.env.SOLANA_WALLET || 'GEBi3nkeevhWCbRP9zJRBy4uzprKbVEBiM87eHpmk4Ci',
   AGENTS_DAILY_TARGET: 150
 };
 
@@ -19,8 +19,7 @@ let income = {
   totalSOL: 0,
   totalUSD: 0,
   dailyTarget: 150,
-  transactions: [],
-  payments: []
+  transactions: []
 };
 
 let agents = {
@@ -40,13 +39,13 @@ const SERVICES = [
   { id: 'automation-setup', name: 'Automation Setup', priceUSD: 199, description: 'Full workflow automation', agent: 'orchestrator', earnings: 120 }
 ];
 
-let solPrice = 150;
+let solPrice = 100;
 
 async function getSolPrice() {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
     const json = await res.json();
-    solPrice = json.solana?.usd || 150;
+    solPrice = json.solana?.usd || 100;
   } catch (e) {}
   return solPrice;
 }
@@ -64,62 +63,56 @@ async function verifySolTransaction(signature) {
       })
     });
     const json = await res.json();
-    if (json.result) {
-      return { success: true, result: json.result };
-    }
-    return { success: false, error: 'Transaction not found' };
+    return json.result ? { success: true } : { success: false, error: 'Not found' };
   } catch (e) {
     return { success: false, error: e.message };
   }
 }
 
 app.get('/api/config', (req, res) => {
-  res.json({
-    wallet: CONFIG.PAYMENT_WALLET || 'Set SOLANA_WALLET env variable',
-    minPayment: 0.001
-  });
+  res.json({ wallet: CONFIG.PAYMENT_WALLET, minPayment: 0.001 });
 });
 
 app.get('/api/status', async (req, res) => {
   const price = await getSolPrice();
-  res.json({ agents, income, solPrice: price, dailyProgress: Math.round((income.todayUSD / income.dailyTarget) * 100), services: SERVICES });
+  res.json({ agents, income, solPrice: price, dailyProgress: Math.round((income.todayUSD / income.dailyTarget) * 100) });
 });
 
 app.get('/api/services', async (req, res) => {
   const price = await getSolPrice();
-  const servicePrices = SERVICES.map(s => ({ ...s, priceSOL: (s.priceUSD / price).toFixed(4), priceUSD: s.priceUSD }));
-  res.json(servicePrices);
+  res.json(SERVICES.map(s => ({ ...s, priceSOL: (s.priceUSD / price).toFixed(4) })));
 });
 
 app.get('/api/prices', async (req, res) => {
   const price = await getSolPrice();
-  res.json({ solPrice: price, services: SERVICES.map(s => ({ ...s, priceSOL: (s.priceUSD / price).toFixed(4) })) });
+  res.json({ solPrice: price });
 });
 
 app.post('/api/demo-payment', async (req, res) => {
   const { serviceId } = req.body;
   const service = SERVICES.find(s => s.id === serviceId);
-  if (!service) return res.status(404).json({ error: 'Service not found' });
+  if (!service) return res.status(404).json({ error: 'Not found' });
 
   const price = await getSolPrice();
   const amountSOL = service.priceUSD / price;
 
-  const payment = {
+  income.transactions.push({
     id: 'demo_' + Date.now(),
-    amountSOL, amountUSD: service.priceUSD,
-    service: service.name, agent: service.agent,
+    amountSOL,
+    amountUSD: service.priceUSD,
+    service: service.name,
+    agent: service.agent,
     timestamp: new Date().toISOString(),
-    confirmed: true, demo: true
-  };
+    demo: true
+  });
 
-  income.transactions.push(payment);
   income.todaySOL += amountSOL;
   income.todayUSD += service.priceUSD;
   income.totalSOL += amountSOL;
   income.totalUSD += service.priceUSD;
   agents[service.agent].earnings += service.earnings;
 
-  res.json({ success: true, payment });
+  res.json({ success: true });
 });
 
 app.post('/api/verify-payment', async (req, res) => {
@@ -127,32 +120,30 @@ app.post('/api/verify-payment', async (req, res) => {
   if (!signature) return res.status(400).json({ error: 'Signature required' });
 
   const result = await verifySolTransaction(signature);
-  if (!result.success) {
-    return res.status(400).json({ error: result.error });
-  }
+  if (!result.success) return res.status(400).json({ error: result.error });
 
   const service = SERVICES.find(s => s.id === serviceId);
   const price = await getSolPrice();
-  const amountSOL = 0.1; // Parse actual amount from transaction
+  const amountSOL = 0.1;
   const usdValue = amountSOL * price;
 
-  const payment = {
+  income.transactions.push({
     id: signature,
-    amountSOL, amountUSD: usdValue,
+    amountSOL,
+    amountUSD: usdValue,
     service: service?.name || 'Service',
     agent: service?.agent || 'orchestrator',
     timestamp: new Date().toISOString(),
-    confirmed: true, onChain: true
-  };
+    onChain: true
+  });
 
-  income.transactions.push(payment);
   income.todaySOL += amountSOL;
   income.todayUSD += usdValue;
   income.totalSOL += amountSOL;
   income.totalUSD += usdValue;
   if (service) agents[service.agent].earnings += service.earnings;
 
-  res.json({ success: true, payment });
+  res.json({ success: true });
 });
 
 app.post('/api/start-day', (req, res) => {
@@ -160,26 +151,10 @@ app.post('/api/start-day', (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/api/stop-day', (req, res) => {
-  Object.keys(agents).forEach(k => agents[k].status = 'idle');
-  res.json({ success: true });
-});
-
-app.get('/api/transactions', (req, res) => res.json(income.transactions.slice(0, 50)));
-
-app.get('/api/wallet-info', (req, res) => {
-  res.json({
-    wallet: CONFIG.PAYMENT_WALLET || 'Configure SOLANA_WALLET env',
-    explorer: CONFIG.PAYMENT_WALLET ? `https://solscan.io/account/${CONFIG.PAYMENT_WALLET}` : null
-  });
-});
-
 app.use(express.static('public'));
 app.get('*', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 app.listen(PORT, () => {
   console.log(`\n🚀 RevOps Agency running at http://localhost:${PORT}`);
-  console.log(`💰 Wallet: ${CONFIG.PAYMENT_WALLET || 'Not configured'}\n`);
+  console.log(`💰 Wallet: ${CONFIG.PAYMENT_WALLET}\n`);
 });
-
-module.exports = app;

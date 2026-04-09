@@ -1,8 +1,11 @@
 services:
   - type: web
-    name: revops-agency
+    name: revops-ai
     env: node
     region: oregon
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server.js
     plan: free
+    envVars:
+      - key: SOLANA_WALLET
+        value: GEBi3nkeevhWCbRP9zJRBy4uzprKbVEBiM87eHpmk4Ci
