@@ -3,79 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RevOps Agency AI - Multi-Agent Revenue System</title>
+  <title>RevOps Agency - Earn Real SOL</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            purple: { 500: '#7C3AED', 600: '#6D28D9', 700: '#5B21B6' },
-            emerald: { 500: '#10B981' }
-          }
-        }
-      }
-    }
-  </script>
   <style>
     * { font-family: 'Inter', sans-serif; }
-    body { background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); }
+    body { background: linear-gradient(135deg, #0F172A 0%, #1a0a2e 100%); }
     .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
-    .pulse-green { animation: pulseGreen 2s infinite; }
-    @keyframes pulseGreen { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } }
-    .agent-card { transition: all 0.3s ease; }
-    .agent-card:hover { transform: translateY(-4px); }
-    .progress-ring { transition: stroke-dashoffset 0.5s ease; }
-    .income-counter { font-variant-numeric: tabular-nums; }
+    .solana-gradient { background: linear-gradient(135deg, #9945FF 0%, #14F195 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(153, 69, 255, 0.2); }
   </style>
 </head>
 <body class="min-h-screen text-white">
-  <div class="max-w-7xl mx-auto p-6">
+  <div id="app" class="max-w-6xl mx-auto p-6">
     
-    <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-          <span class="text-2xl">🤖</span>
+        <div class="w-16 h-16 rounded-2xl solana-gradient flex items-center justify-center shadow-lg">
+          <span class="text-3xl">🚀</span>
         </div>
         <div>
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">RevOps Agency AI</h1>
-          <p class="text-slate-400">Multi-Agent Revenue System</p>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-green-400 bg-clip-text text-transparent">RevOps Agency</h1>
+          <p class="text-slate-400">Earn Real SOL • $150+ Daily Target</p>
         </div>
       </div>
-      
       <div class="flex items-center gap-4">
-        <div id="statusBadge" class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/80">
-          <span id="statusDot" class="w-3 h-3 rounded-full bg-slate-500"></span>
-          <span id="statusText" class="text-sm font-medium">Ready</span>
+        <div id="solPrice" class="px-4 py-2 rounded-full bg-slate-800/80 border border-purple-500/30">
+          <span class="text-purple-400 font-bold">SOL</span>
+          <span id="solPriceValue" class="text-white ml-2">$150</span>
         </div>
-        <div id="incomeBadge" class="px-5 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-          <span class="text-emerald-400 font-bold">$0</span>
+        <div class="px-5 py-3 rounded-xl bg-green-500/20 border border-green-500/30">
+          <span id="totalUSD" class="text-green-400 font-bold text-xl">$0</span>
+          <span class="text-green-400/60 text-sm ml-1">total</span>
         </div>
       </div>
     </header>
 
-    <!-- Income Progress -->
-    <div class="glass rounded-3xl p-6 mb-6 border border-slate-700/50">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+    <div class="glass rounded-3xl p-6 mb-6 border border-purple-500/30">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 class="text-lg font-semibold text-slate-300">Today's Income</h2>
-          <div class="flex items-baseline gap-3">
-            <span id="incomeAmount" class="text-5xl font-bold text-white income-counter">$0</span>
-            <span class="text-slate-500">/ $150 target</span>
+          <h2 class="text-lg font-semibold text-slate-300 mb-2">Today's Earnings</h2>
+          <div class="flex items-baseline gap-4">
+            <span id="todaySOL" class="text-5xl font-bold text-white">0 SOL</span>
+            <span id="todayUSD" class="text-2xl text-green-400">$0 / $150</span>
           </div>
         </div>
         <div class="flex items-center gap-6">
-          <div class="text-right">
+          <div class="text-center">
             <p class="text-sm text-slate-400">Progress</p>
-            <p id="incomePercent" class="text-2xl font-bold text-purple-400">0%</p>
+            <p id="progressPercent" class="text-3xl font-bold text-purple-400">0%</p>
           </div>
           <div class="relative w-20 h-20">
             <svg class="w-20 h-20 transform -rotate-90">
-              <circle cx="40" cy="40" r="35" stroke="#334155" stroke-width="6" fill="none"/>
-              <circle id="progressRing" cx="40" cy="40" r="35" stroke="#7C3AED" stroke-width="6" fill="none" 
-                stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="round" class="progress-ring"/>
+              <circle cx="40" cy="40" r="35" stroke="#334155" stroke-width="5" fill="none"/>
+              <circle id="progressRing" cx="40" cy="40" r="35" stroke="#9945FF" stroke-width="5" fill="none" 
+                stroke-dasharray="220" stroke-dashoffset="220" stroke-linecap="round"/>
             </svg>
             <div class="absolute inset-0 flex items-center justify-center">
               <span id="progressText" class="text-lg font-bold">0%</span>
@@ -83,281 +66,166 @@
           </div>
         </div>
       </div>
-      <div class="w-full bg-slate-700 rounded-full h-3">
-        <div id="incomeProgress" class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+    </div>
+
+    <div class="glass rounded-xl p-4 mb-6 border border-green-500/30">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💰</span>
+          <div>
+            <p class="text-sm text-slate-400">Payment Wallet</p>
+            <p id="walletAddress" class="font-mono text-sm text-green-400">Loading...</p>
+          </div>
+        </div>
+        <a id="explorerLink" href="#" target="_blank" class="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 rounded-lg text-sm">
+          View on Explorer →
+        </a>
       </div>
     </div>
 
-    <!-- Agent Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-      <!-- Orchestrator -->
-      <div class="agent-card glass rounded-2xl p-5 border border-purple-500/30">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-xl">👑</div>
-          <div>
-            <h3 class="font-semibold">Orchestrator</h3>
-            <p class="text-xs text-slate-400">Supervisor</p>
-          </div>
-        </div>
-        <div id="orchestratorStatus" class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span class="text-sm text-slate-400">Idle</span>
-        </div>
-        <div class="mt-3 text-xs text-slate-500">Assigns & monitors tasks</div>
-      </div>
+    <h2 class="text-xl font-bold mb-4">🛒 Services (Pay with SOL)</h2>
+    <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"></div>
 
-      <!-- Lead Gen -->
-      <div class="agent-card glass rounded-2xl p-5 border border-blue-500/30">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-xl">🎯</div>
-          <div>
-            <h3 class="font-semibold">Lead Gen</h3>
-            <p class="text-xs text-slate-400">Hunter Agent</p>
-          </div>
-        </div>
-        <div id="leadgenStatus" class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span class="text-sm text-slate-400">Idle</span>
-        </div>
-        <div class="mt-2 flex items-baseline gap-1">
-          <span id="leadgenCount" class="text-2xl font-bold text-blue-400">0</span>
-          <span class="text-sm text-slate-500">/ 50 leads</span>
-        </div>
-      </div>
+    <h2 class="text-xl font-bold mb-4">🤖 Active Agents</h2>
+    <div id="agentsGrid" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
 
-      <!-- Outreach -->
-      <div class="agent-card glass rounded-2xl p-5 border border-green-500/30">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-xl">📨</div>
-          <div>
-            <h3 class="font-semibold">Outreach</h3>
-            <p class="text-xs text-slate-400">Sales Agent</p>
-          </div>
-        </div>
-        <div id="outreachStatus" class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span class="text-sm text-slate-400">Idle</span>
-        </div>
-        <div class="mt-2 flex items-baseline gap-1">
-          <span id="outreachCount" class="text-2xl font-bold text-green-400">0</span>
-          <span class="text-sm text-slate-500">/ 30 sent</span>
-        </div>
-      </div>
-
-      <!-- Content -->
-      <div class="agent-card glass rounded-2xl p-5 border border-orange-500/30">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-xl">✍️</div>
-          <div>
-            <h3 class="font-semibold">Content</h3>
-            <p class="text-xs text-slate-400">Marketing Agent</p>
-          </div>
-        </div>
-        <div id="contentStatus" class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span class="text-sm text-slate-400">Idle</span>
-        </div>
-        <div class="mt-2 flex items-baseline gap-1">
-          <span id="contentCount" class="text-2xl font-bold text-orange-400">0</span>
-          <span class="text-sm text-slate-500">/ 3 posts</span>
-        </div>
-      </div>
-
-      <!-- Analytics -->
-      <div class="agent-card glass rounded-2xl p-5 border border-yellow-500/30">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center text-xl">📊</div>
-          <div>
-            <h3 class="font-semibold">Analytics</h3>
-            <p class="text-xs text-slate-400">Intelligence</p>
-          </div>
-        </div>
-        <div id="analyticsStatus" class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-          <span class="text-sm text-slate-400">Idle</span>
-        </div>
-        <div class="mt-2 flex items-baseline gap-1">
-          <span id="analyticsCount" class="text-2xl font-bold text-yellow-400">0</span>
-          <span class="text-sm text-slate-500">conversions</span>
-        </div>
-      </div>
+    <h2 class="text-xl font-bold mb-4">💸 Recent Payments</h2>
+    <div id="transactions" class="glass rounded-xl p-4 border border-slate-700/50 max-h-64 overflow-y-auto">
+      <p class="text-slate-500 text-center py-8">No payments yet. Buy a service!</p>
     </div>
 
-    <!-- Controls -->
-    <div class="flex flex-wrap gap-3 mb-6">
-      <button id="startDayBtn" onclick="startDay()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-semibold transition transform hover:scale-105">
-        <span>🚀</span>
-        <span>Start Day</span>
-      </button>
-      <button onclick="addIncome()" class="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium transition">
-        <span>💰</span>
-        <span>Log Income</span>
-      </button>
-      <button onclick="loadData()" class="flex items-center gap-2 px-5 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition">
-        <span>🔄</span>
-        <span>Refresh</span>
-      </button>
-    </div>
-
-    <!-- Activity Log -->
-    <div class="glass rounded-2xl p-6 border border-slate-700/50">
-      <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-        <span>📋</span> Recent Activity
-      </h2>
-      <div id="activityLog" class="space-y-3 max-h-64 overflow-y-auto">
-        <p class="text-slate-500 text-sm">No activity yet. Start the day to begin...</p>
-      </div>
-    </div>
-
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-      <div class="glass rounded-xl p-4 border border-slate-700/50">
-        <p class="text-sm text-slate-400 mb-1">Leads Today</p>
-        <p id="statLeads" class="text-2xl font-bold text-blue-400">0</p>
-      </div>
-      <div class="glass rounded-xl p-4 border border-slate-700/50">
-        <p class="text-sm text-slate-400 mb-1">Messages Sent</p>
-        <p id="statMessages" class="text-2xl font-bold text-green-400">0</p>
-      </div>
-      <div class="glass rounded-xl p-4 border border-slate-700/50">
-        <p class="text-sm text-slate-400 mb-1">Content Pieces</p>
-        <p id="statContent" class="text-2xl font-bold text-orange-400">0</p>
-      </div>
-      <div class="glass rounded-xl p-4 border border-slate-700/50">
-        <p class="text-sm text-slate-400 mb-1">Response Rate</p>
-        <p id="statResponse" class="text-2xl font-bold text-purple-400">0%</p>
-      </div>
+    <div class="mt-6 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
+      <p class="text-yellow-400 text-sm text-center">
+        💡 <strong>Demo Mode:</strong> Click "Demo Pay" to test. Set <code class="bg-slate-800 px-2 py-1 rounded">SOLANA_WALLET</code> env variable for real payments.
+      </p>
     </div>
   </div>
 
   <script>
-    async function loadData() {
+    let services = [];
+    let solPrice = 150;
+    let wallet = '';
+
+    async function loadStatus() {
       try {
-        const res = await fetch('/api/status');
-        const data = await res.json();
-        updateUI(data);
-      } catch (err) {
-        console.error('Failed to load data:', err);
-      }
+        const [statusRes, pricesRes] = await Promise.all([fetch('/api/status'), fetch('/api/prices')]);
+        const status = await statusRes.json();
+        const prices = await pricesRes.json();
+        services = prices.services;
+        solPrice = prices.solPrice;
+        updateUI(status);
+        renderServices();
+        renderAgents(status.agents);
+      } catch (err) { console.error('Failed to load:', err); }
     }
 
     function updateUI(data) {
-      const { agents, income, activityLog } = data;
-
-      // Income
-      document.getElementById('incomeAmount').textContent = `$${income.today}`;
-      const percent = Math.min(100, Math.round((income.today / income.dailyTarget) * 100));
-      document.getElementById('incomePercent').textContent = `${percent}%`;
-      document.getElementById('progressText').textContent = `${percent}%`;
-      document.getElementById('incomeProgress').style.width = `${percent}%`;
-      document.getElementById('progressRing').style.strokeDashoffset = 220 - (220 * percent / 100);
-      document.getElementById('incomeBadge').querySelector('span').textContent = `$${income.today}`;
-
-      // Agents
-      updateAgent('orchestrator', agents.orchestrator);
-      updateAgent('leadgen', agents.leadgen, 'leadsFound');
-      updateAgent('outreach', agents.outreach, 'messagesSent');
-      updateAgent('content', agents.content, 'piecesCreated');
-      updateAgent('analytics', agents.analytics, 'conversions');
-
-      // Stats
-      document.getElementById('statLeads').textContent = agents.leadgen.leadsFound;
-      document.getElementById('statMessages').textContent = agents.outreach.messagesSent;
-      document.getElementById('statContent').textContent = agents.content.piecesCreated;
-      document.getElementById('statResponse').textContent = agents.outreach.messagesSent > 0 ? 
-        `${Math.floor(Math.random() * 15 + 10)}%` : '0%';
-
-      // Activity
-      const logEl = document.getElementById('activityLog');
-      if (activityLog.length > 0) {
-        logEl.innerHTML = activityLog.map(entry => {
-          const time = new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          const agentEmoji = getAgentEmoji(entry.agent);
-          return `
-            <div class="flex items-start gap-3 p-3 rounded-lg bg-slate-800/50">
-              <span class="text-lg">${agentEmoji}</span>
-              <div class="flex-1">
-                <p class="text-sm text-white">${entry.message}</p>
-                <p class="text-xs text-slate-500">${time}</p>
-              </div>
+      document.getElementById('solPriceValue').textContent = `$${solPrice}`;
+      document.getElementById('totalUSD').textContent = `$${Math.round(data.income.totalUSD)}`;
+      document.getElementById('todaySOL').textContent = `${data.income.todaySOL.toFixed(4)} SOL`;
+      document.getElementById('todayUSD').textContent = `$${Math.round(data.income.todayUSD)} / $${data.income.dailyTarget}`;
+      const progress = Math.min(100, Math.round((data.income.todayUSD / data.income.dailyTarget) * 100));
+      document.getElementById('progressPercent').textContent = `${progress}%`;
+      document.getElementById('progressText').textContent = `${progress}%`;
+      document.getElementById('progressRing').style.strokeDashoffset = 220 - (220 * progress / 100);
+      if (data.income.transactions && data.income.transactions.length > 0) {
+        document.getElementById('transactions').innerHTML = data.income.transactions.slice(0, 10).map(t => `
+          <div class="flex items-center justify-between py-3 border-b border-slate-700/50 last:border-0">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">${t.demo ? '🧪' : '✅'}</span>
+              <div><p class="font-medium">${t.service}</p><p class="text-xs text-slate-500">${new Date(t.timestamp).toLocaleString()}</p></div>
             </div>
-          `;
-        }).join('');
-      }
-
-      // Status
-      const isActive = agents.orchestrator.status === 'active';
-      document.getElementById('statusDot').className = `w-3 h-3 rounded-full ${isActive ? 'bg-emerald-500 pulse-green' : 'bg-slate-500'}`;
-      document.getElementById('statusText').textContent = isActive ? 'Active' : 'Ready';
-    }
-
-    function updateAgent(name, state, countKey = null) {
-      const statusEl = document.getElementById(`${name}Status`);
-      const isActive = state.status === 'active';
-      
-      statusEl.innerHTML = `
-        <span class="w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-slate-500'} ${isActive ? 'animate-pulse' : ''}"></span>
-        <span class="text-sm ${isActive ? 'text-emerald-400' : 'text-slate-400'}">${isActive ? 'Active' : 'Idle'}</span>
-      `;
-
-      if (countKey && state[countKey] !== undefined) {
-        document.getElementById(`${name}Count`).textContent = state[countKey];
+            <div class="text-right">
+              <p class="text-green-400 font-bold">+${t.amountSOL.toFixed(4)} SOL</p>
+              <p class="text-xs text-slate-500">$${Math.round(t.amountUSD)}</p>
+            </div>
+          </div>
+        `).join('');
       }
     }
 
-    function getAgentEmoji(agent) {
-      const emojis = {
-        orchestrator: '👑',
-        leadgen: '🎯',
-        outreach: '📨',
-        content: '✍️',
-        analytics: '📊',
-        income: '💰',
-        system: '⚙️'
-      };
-      return emojis[agent] || '🤖';
+    function renderServices() {
+      document.getElementById('servicesGrid').innerHTML = services.map(s => `
+        <div class="card-hover glass rounded-2xl p-5 border border-slate-700/50">
+          <div class="flex items-start justify-between mb-3">
+            <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-medium">${s.agent.toUpperCase()}</span>
+            <span class="text-green-400 font-bold">$${s.priceUSD}</span>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">${s.name}</h3>
+          <p class="text-sm text-slate-400 mb-4">${s.description}</p>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-slate-500">${s.priceSOL} SOL</span>
+            <span class="text-xs text-yellow-400">Earns: $${s.earnings}/sale</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="payDemo('${s.id}')" class="flex-1 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg text-sm font-medium">🧪 Demo</button>
+            <button onclick="paySOL('${s.id}')" class="flex-1 py-2 solana-gradient text-white rounded-lg text-sm font-medium">💰 Pay SOL</button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    async function startDay() {
-      const btn = document.getElementById('startDayBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span><span>Running...</span>';
-      
+    function renderAgents(agents) {
+      const agentList = [
+        { key: 'orchestrator', name: 'Orchestrator', emoji: '👑', price: 60 },
+        { key: 'leadgen', name: 'Lead Gen', emoji: '🎯', price: 15 },
+        { key: 'outreach', name: 'Outreach', emoji: '📨', price: 30 },
+        { key: 'content', name: 'Content', emoji: '✍️', price: 20 },
+        { key: 'analytics', name: 'Analytics', emoji: '📊', price: 50 }
+      ];
+      document.getElementById('agentsGrid').innerHTML = agentList.map(a => `
+        <div class="glass rounded-xl p-4 border border-purple-500/30">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xl">${a.emoji}</span>
+            <span class="font-semibold">${a.name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full ${agents[a.key]?.status === 'active' ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}"></span>
+            <span class="text-sm ${agents[a.key]?.status === 'active' ? 'text-green-400' : 'text-slate-400'}">${agents[a.key]?.status === 'active' ? 'Active' : 'Idle'}</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">$${a.price}/earn</p>
+        </div>
+      `).join('');
+    }
+
+    async function payDemo(serviceId) {
       try {
-        const res = await fetch('/api/start-day', { method: 'POST' });
+        const res = await fetch('/api/demo-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ serviceId }) });
         const data = await res.json();
-        await loadData();
-        
         if (data.success) {
-          btn.innerHTML = '<span>✅</span><span>Complete!</span>';
-          setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<span>🚀</span><span>Start Day</span>';
-          }, 2000);
+          alert(`✅ Payment recorded!\n\n${data.payment.amountSOL} SOL ($${data.payment.amountUSD})\nService: ${data.payment.service}`);
+          loadStatus();
         }
-      } catch (err) {
-        console.error('Start day failed:', err);
-        btn.disabled = false;
+      } catch (err) { alert('Payment failed'); }
+    }
+
+    async function paySOL(serviceId) {
+      const service = services.find(s => s.id === serviceId);
+      const solAmount = service.priceSOL;
+      alert(`Send exactly ${solAmount} SOL to:\n\n${wallet}\n\nService: ${service.name}\n\nThen enter the transaction signature below.`);
+      const sig = prompt('Paste transaction signature:');
+      if (sig) {
+        const res = await fetch('/api/verify-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ signature: sig, serviceId }) });
+        const data = await res.json();
+        if (data.success) { alert('✅ Payment verified!'); loadStatus(); }
+        else { alert('❌ ' + (data.error || 'Verification failed')); }
       }
     }
 
-    async function addIncome() {
-      const amount = prompt('Enter income amount:', '25');
-      if (amount) {
-        await fetch('/api/income/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: parseFloat(amount), source: 'Client Payment' })
-        });
-        await loadData();
-      }
+    async function loadWalletInfo() {
+      try {
+        const res = await fetch('/api/wallet-info');
+        const data = await res.json();
+        wallet = data.wallet;
+        document.getElementById('walletAddress').textContent = data.wallet.substring(0, 25) + '...';
+        document.getElementById('explorerLink').href = data.explorer || '#';
+      } catch (err) { console.error(err); }
     }
 
-    // Initial load
-    loadData();
-    
-    // Auto-refresh every 5 seconds
-    setInterval(loadData, 5000);
+    fetch('/api/start-day', { method: 'POST' });
+    loadStatus();
+    loadWalletInfo();
+    setInterval(loadStatus, 10000);
   </script>
 </body>
 </html>
