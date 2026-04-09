@@ -1,12 +1,10 @@
 {
   "name": "revops-agency",
   "version": "1.0.0",
-  "description": "RevOps Agency AI - Multi-agent revenue system",
+  "description": "RevOps Agency AI",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
